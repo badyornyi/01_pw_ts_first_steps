@@ -1,0 +1,23 @@
+{
+  "name": "01_pw_ts_first_steps",
+  "version": "1.0.0",
+  "description": "Playwright + TypeScript automation first tries",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/badyornyi/01_pw_ts_first_steps.git"
+  },
+  "keywords": [],
+  "author": "badyornyi-o",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/badyornyi/01_pw_ts_first_steps/issues"
+  },
+  "homepage": "https://github.com/badyornyi/01_pw_ts_first_steps#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.0.1"
+  }
+}
