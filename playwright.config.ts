@@ -24,7 +24,8 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html'],
-    ['list']
+    ['list'],
+    ['dot']
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -38,7 +39,7 @@ export default defineConfig({
     trace: 'on-first-retry',
 
     /* Screenshots collecting */
-    screenshot: 'only-on-failure'
+    screenshot: 'only-on-failure',
   },
 
   /* Configure projects for major browsers */

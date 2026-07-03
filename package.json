@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Playwright + TypeScript automation first tries",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:ci": "playwright test --reporter=dot"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/badyornyi/01_pw_ts_first_steps.git"
