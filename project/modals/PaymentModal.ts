@@ -10,7 +10,7 @@ export class PaymentModal {
 
     constructor(page: Page){
         this.page = page;
-        this.paymentModalLctr = page.locator("div.modal");
+        this.paymentModalLctr = this.page.locator("div.modal");
         this.closePaymentModal = this.paymentModalLctr.locator("button.close");
         this.nameInputLctr = this.paymentModalLctr.locator("#name");
         this.emailInputLctr = this.paymentModalLctr.locator("#email");
