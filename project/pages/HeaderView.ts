@@ -1,20 +1,23 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 export class HeaderView{
     private readonly page: Page;
+    private readonly tabLinkLctr = (tabName: string) => this.page.locator(`a[aria-label='${tabName}']`);
+    private readonly activeTabLctr: Locator;
 
     constructor(page: Page){
         this.page = page;
+        this.activeTabLctr = this.page.locator(`a.router-link-active`);
     }
 
-    async navigateToTab(tab: string){
-        const tabLinkLctr = this.page.locator(`a[aria-label='${tab}']`);
-        await tabLinkLctr.click();
+    async navigateToTab(tabName: string){
+        await this.tabLinkLctr(tabName).click();
         return this;
     }
 
+    // Asserts
+
     async assertActiveTab(activeTab: string){
-        const activeTabLctr = this.page.locator(`a.router-link-active`);
-        expect(await activeTabLctr.getAttribute("aria-label")).toBe(activeTab);
+        expect(await this.activeTabLctr.getAttribute("aria-label")).toBe(activeTab);
     }
 }

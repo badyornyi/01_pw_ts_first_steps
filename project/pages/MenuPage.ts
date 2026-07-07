@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { PaymentModal } from "../modals/PaymentModal";
 
 export class MenuPage {
@@ -10,15 +10,25 @@ export class MenuPage {
     private readonly promoYesLctr: Locator;
     private readonly promoNoLctr: Locator;
     private readonly cupLctr = (drinkName: string) => this.page.locator(`div.cup-body[aria-label='${drinkName}']`);
+    private readonly yesBtnLctr: Locator;
+    private readonly noBtnLctr: Locator;
+    private readonly cupTitleLctr = (drinkName: string) => this.page.locator("li", { has: this.cupLctr(drinkName) }).locator("h4");
+    private readonly coffeeCountLctr = (drinkName: string) => this.page.locator(`//span[.='${drinkName}']/../span[@class='unit-desc']`);
+    private readonly cartPreviewLctr: Locator;
+    private readonly coffeeLineLctr = (drinkName: string) => this.cartPreviewLctr.locator(`li:has-text('${drinkName}')`);
+    private readonly decreaseCoffeeNumberLctr = (drinkName: string) => this.coffeeLineLctr(drinkName).locator(`[aria-label='Remove one ${drinkName}']`);
 
     constructor(page: Page){
         this.page = page;
-        this.totalBtnLctr = page.locator("button.pay");
-        this.successMsgLctr = page.locator("div.success");
-        this.promoLctr = page.locator("div.promo");
+        this.totalBtnLctr = this.page.locator("button.pay");
+        this.successMsgLctr = this.page.locator("div.success");
+        this.promoLctr = this.page.locator("div.promo");
         this.promoTitleLctr = this.promoLctr.locator("span");
         this.promoYesLctr = this.promoLctr.getByRole("button", { name: "Yes, of course!" });
         this.promoNoLctr = this.promoLctr.getByRole("button", { name: "Nah, I'll skip." });
+        this.yesBtnLctr = this.page.getByRole("button", { name: "Yes" });
+        this.noBtnLctr = this.page.getByRole("button", { name: "No" });
+        this.cartPreviewLctr = this.page.locator(".cart-preview.show");
     }
 
     async navigateTo(){
@@ -35,27 +45,28 @@ export class MenuPage {
         for(const drinkName of drinkNames){
             await this.addToCart(drinkName);
         }
+        return this;
     }
 
     async addToCartByRmb(drinkName: string, add = true){
-        const yesBtnLctr = this.page.getByRole("button", { name: "Yes" });
-        const noBtnLctr = this.page.getByRole("button", { name: "No" });
         await this.cupLctr(drinkName).click({ button: "right" });
         if(add){
-            await yesBtnLctr.click();
+            await this.yesBtnLctr.click();
         }
         else{
-            await noBtnLctr.click();
+            await this.noBtnLctr.click();
         }
+        return this;
     }
 
     async dblClickCoffeeTitle(drinkName: string){
-        const cupTitleLctr = this.page.locator("li", { has: this.cupLctr(drinkName) }).locator("h4");
-        await cupTitleLctr.dblclick();
+        await this.cupTitleLctr(drinkName).dblclick();
+        return this;
     }
 
     async hoverTotalBtn(){
         await this.totalBtnLctr.hover();
+        return this;
     }
 
     async clickTotalBtn(){
@@ -64,17 +75,15 @@ export class MenuPage {
     }
 
     async getCoffeeTitleValue(drinkName: string){
-        const cupTitleLctr = this.page.locator("li", { has: this.cupLctr(drinkName) }).locator("h4");
-        return await cupTitleLctr.textContent();
+        return await this.cupTitleLctr(drinkName).textContent();
     }
 
     async getTotal(){
         return await this.totalBtnLctr.innerText();
     }
 
-    async getOrderedCoffeeCount(coffeeName: string){
-        const coffeeCountLctr = this.page.locator(`//span[.='${coffeeName}']/../span[@class='unit-desc']`);
-        return (await coffeeCountLctr.innerText()).replace(" x ", "");
+    async getOrderedCoffeeCount(drinkName: string){
+        return (await this.coffeeCountLctr(drinkName).innerText()).replace(" x ", "");
     }
 
     async getSuccessMsg(){
@@ -100,11 +109,25 @@ export class MenuPage {
     // cart pop-over
 
     async removeFromCart(drinkName: string){
-        const cartPreviewLctr = this.page.locator(".cart-preview.show");
-        const coffeeLineLctr = cartPreviewLctr.locator(`li:has-text('${drinkName}')`);
-        //const decreaseCoffeeNumberLctr = coffeeLineLctr.getByRole("button", { name: "-" });
-        const decreaseCoffeeNumberLctr = coffeeLineLctr.locator(`[aria-label='Remove one ${drinkName}']`);
-        await decreaseCoffeeNumberLctr.click();
+        await this.decreaseCoffeeNumberLctr(drinkName).click();
         return this;
+    }
+
+    // Assertions
+
+    async assertTotal(expectedTotal: string){
+        expect(await this.getTotal()).toBe(expectedTotal);
+    }
+
+    async assertPromoIsVisible(expectedIsVisible: boolean){
+        expect(await this.isPromoVisible()).toBe(expectedIsVisible);
+    }
+
+    async assertHasSuccessMsg(){
+        expect(await this.getSuccessMsg()).toBe("Thanks for your purchase. Please check your email for payment.");
+    }
+
+    async assertDrinkTitle(drinkName: string, expectedDrinkTitle: string){
+        expect(await this.getCoffeeTitleValue(drinkName)).toBe(expectedDrinkTitle);
     }
 }

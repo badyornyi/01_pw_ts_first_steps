@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 export class PaymentModal {
     private readonly page: Page;
@@ -10,7 +10,7 @@ export class PaymentModal {
 
     constructor(page: Page){
         this.page = page;
-        this.paymentModalLctr = page.locator("div.modal");
+        this.paymentModalLctr = this.page.locator("div.modal");
         this.closePaymentModal = this.paymentModalLctr.locator("button.close");
         this.nameInputLctr = this.paymentModalLctr.locator("#name");
         this.emailInputLctr = this.paymentModalLctr.locator("#email");
@@ -41,5 +41,11 @@ export class PaymentModal {
 
     private async clickSubmitBtn(){
         await this.submitBtnLctr.click();
+    }
+
+    // Assertions
+
+    async assertDialogIsOpened(expectedIsOpened: boolean){
+        expect(await this.isDialogOpened()).toBe(expectedIsOpened);
     }
 }
