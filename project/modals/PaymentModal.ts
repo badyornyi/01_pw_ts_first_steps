@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 export class PaymentModal {
     private readonly page: Page;
@@ -41,5 +41,11 @@ export class PaymentModal {
 
     private async clickSubmitBtn(){
         await this.submitBtnLctr.click();
+    }
+
+    // Assertions
+
+    async assertDialogIsOpened(expectedIsOpened: boolean){
+        expect(await this.isDialogOpened()).toBe(expectedIsOpened);
     }
 }

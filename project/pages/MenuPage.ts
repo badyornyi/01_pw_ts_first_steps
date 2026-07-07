@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { PaymentModal } from "../modals/PaymentModal";
 
 export class MenuPage {
@@ -111,5 +111,23 @@ export class MenuPage {
     async removeFromCart(drinkName: string){
         await this.decreaseCoffeeNumberLctr(drinkName).click();
         return this;
+    }
+
+    // Assertions
+
+    async assertTotal(expectedTotal: string){
+        expect(await this.getTotal()).toBe(expectedTotal);
+    }
+
+    async assertPromoIsVisible(expectedIsVisible: boolean){
+        expect(await this.isPromoVisible()).toBe(expectedIsVisible);
+    }
+
+    async assertHasSuccessMsg(){
+        expect(await this.getSuccessMsg()).toBe("Thanks for your purchase. Please check your email for payment.");
+    }
+
+    async assertDrinkTitle(drinkName: string, expectedDrinkTitle: string){
+        expect(await this.getCoffeeTitleValue(drinkName)).toBe(expectedDrinkTitle);
     }
 }
